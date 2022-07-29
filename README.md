@@ -1,4 +1,4 @@
-# BasicTimeSeries
+# BasicTimeSeries Automation
 This part has three classes: TimeSeries, ARIMA and SARIMA classes.
 TimeSeries is the parent class that takes care of common time series tasks such as:
 1) Time Series Plots
