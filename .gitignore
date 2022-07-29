@@ -167,8 +167,8 @@ profile_default/
 ipython_config.py
 
 # pipfile
-# Pipfile
-# Pipfile.lock
+Pipfile
+Pipfile.lock
 
 # Remove previous ipynb_checkpoints
 #   git rm -r .ipynb_checkpoints/
