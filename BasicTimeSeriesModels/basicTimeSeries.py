@@ -259,7 +259,7 @@ class TimeSeries:
         raise NotImplementedError
     
 class ARIMAModels(TimeSeries):
-    def model_evaluation(self, series, p_values, d_values, q_values):
+    def model_evaluation(self, train_data, test_data, p_values, d_values, q_values):
         """_summary_
         Uses grid_search to locate the best fitting model
 
@@ -276,30 +276,26 @@ class ARIMAModels(TimeSeries):
         """
         import statsmodels.api as sm
         from sklearn.metrics import mean_squared_error
-        dataset = series.astype('float32')
         best_score, best_cfg = float("inf"), None
         for p in p_values:
             for d in d_values:
                 for q in q_values:
                     order = (p, d, q)
                     try:
-                        def evaluate_arima_model(dataset, order):
-                            # prepare training dataset
-                            train_size = int(len(dataset) * self.__ratio)
-                            train, test = dataset[0:train_size], dataset[train_size:]
-                            history = [dataset for dataset in train]
+                        def evaluate_arima_model(train_data, order):
+                            history = [dataset for dataset in train_data]
                             # make predictions
                             predictions = list()
-                            for t in range(len(test)):
+                            for t in range(len(test_data)):
                                 model = sm.tsa.arima.ARIMA(history, order=order)
                                 model_fit = model.fit()
                                 yhat = model_fit.forecast()[0]
                                 predictions.append(yhat)
-                                history.append(test[t])
+                                history.append(test_data[t])
                             # calculate out of sample error
-                            error = mean_squared_error(test, predictions)
+                            error = mean_squared_error(test_data, predictions)
                             return error
-                        mse=evaluate_arima_model(dataset, order)
+                        mse=evaluate_arima_model(train_data, order)
                         if mse < best_score:
                             best_score, best_cfg = mse, order
                         print('ARIMA%s MSE=%.6f' % (order, mse))
@@ -344,16 +340,16 @@ class ARIMAModels(TimeSeries):
         print("alternative-hypothesis:  The residuals are not independently distributed","\n", '-'*47)
         print(sm.stats.acorr_ljungbox(self.__results.resid, lags=lags, return_df=True))
         
-    def prediction_check(self, test_data, start_date, end_date):
+    def prediction_check(self, test_data):
         """_summary_
         Plot How the predictions compares with the test data
 
         Args:
         test_data(pandas Series): The pandas series to be compared with the prediction
-        start_date (datetime string): The date that the model should start predicting, should be Y-m-d
-        end_date (datetime string): When the model should end its prediction, should be Y-m-d
         """
         self.__test = test_data
+        start_date = str(test_data.index[0]).split(" ")[0]
+        end_date = str(test_data.index[-1]).split(" ")[0]
         start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
         end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
         df_pred = self.__results.predict(start=start_date, end=end_date)
@@ -471,7 +467,7 @@ class SARIMAModels(TimeSeries):
         print("alternative-hypothesis:  The residuals are not independently distributed","\n", '-'*47)
         print(sm.stats.acorr_ljungbox(self.__results_resid, lags=lags, return_df=True))
         
-    def prediction_check(self, test_data, start_date, end_date):
+    def prediction_check(self, test_data):
         """_summary_
         Plot How the predictions compares with the test data
 
@@ -481,6 +477,8 @@ class SARIMAModels(TimeSeries):
         end_date (datetime string): When the model should end its prediction, should be Y-m-d
         """
         self.__test = test_data
+        start_date = str(test_data.index[0]).split(" ")[0]
+        end_date = str(test_data.index[-1]).split(" ")[0]
         start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
         end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
         df_pred = self.__results.predict(start=start_date, end=end_date)
