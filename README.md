@@ -50,7 +50,9 @@ sarima_model.decomposition_plot(data, model='additive', period='None') # The per
 sarima_model.correlation_function(data, lags=10) # lags=10 is the default, and can be changed if need be.
 sarima_model.stationarity_check(data, signif=0.05) # signif=0.05 is the alpha value, 
 # can be changed if need be. In this  case stationarity is being checked at 95% confidence level.
-sarima_model.model_evaluation(series, p_values, d_values, q_values) # series parameter should the a Pandas Series; 
+sarima_model.model_evaluation(train, test, p_values, d_values, q_values) 
+# Train parameter should the a Pandas Series; the train data_set
+# Test parameter should the a Pandas Series; the test data_set
 # p_values is a list of the range of values that you wish to check for the AR part of ARIMA model
 # d_values is a list of the range of values that you wish to check for the differentiation part
 # q_values is a list of the range of values that you wish to check for the MA part of ARIMA model

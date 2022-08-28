@@ -4,16 +4,6 @@ import numpy as np
 from datetime import datetime
 import itertools
 import warnings
-
-# stats
-# from statsmodels.tsa.seasonal import seasonal_decompose
-# import statsmodels.graphics.tsaplots as sgt
-# from statsmodels.tsa.arima_model import ARIMA
-# from scipy.stats.distributions import chi2
-# import statsmodels.tsa.stattools as sts
-# import statsmodels.api as sm
-# from sklearn.metrics import mean_squared_error
-
 # Plotting
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -264,15 +254,17 @@ class ARIMAModels(TimeSeries):
         Uses grid_search to locate the best fitting model
 
         Args:
-            series (Pandas Series): The data to be modelled on the time series. Should be a Pandas Series
+            train_data (Pandas Series): The data to be modelled on the time series. Should be a Pandas Series
+            test_data (Pandas Series): The data to be modelled on the time series. Should be a Pandas Series
             p_values (list): A list containing the order for the AR part of ARIMA
             d_values (list): A list containing the order for the differentiation part of ARIMA
             q_values (list): A list containing the order of MA part of ARIMA
         Examples:
-            1) model_evaluation(data["column_name"], 
-                                p_values=[1,2,3,4,5], 
-                                d_values=[1,2],
-                                q_values=[1,2,3,4,5])
+            model_evaluation(train_data, 
+                            test_data,
+                            p_values=[1,2,3,4,5], 
+                            d_values=[1,2],
+                            q_values=[1,2,3,4,5])
         """
         import statsmodels.api as sm
         from sklearn.metrics import mean_squared_error
@@ -521,13 +513,3 @@ class SARIMAModels(TimeSeries):
         plt.legend()
         plt.show()
         return pred_uc.summary_frame()
-        
-    
-    
-    
-        
-        
-        
-        
-            
-    
