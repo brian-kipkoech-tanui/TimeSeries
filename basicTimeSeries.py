@@ -295,13 +295,18 @@ class ARIMAModels(TimeSeries):
                         continue
         print('Best ARIMA%s MSE=%.6f' % (best_cfg, best_score))
         
-    def best_model(self, train_data, order):
+    def best_model(self, train_data, test_data, order, lags):
         """_summary_
         This is a function to fit the best model based on aic and llf obtained from
-        run_time_series function
+        model_evaluation function and also check if the fitted model perfoms as expected.
+        Checks if the model fulfils regression and Time Series Assumptions
+        By Plotting the QQ-plot and performing the Ljung-Box test on the data.
+        Plots How the predictions compares with the test data
         Args:
-        series(pandas series): A pandas series containing the data to be fitted on the model
+        train_data(pandas series): A pandas series containing the training data to be fitted on the model
+        test_data(pandas series): A pandas series containing the test data to test the model's accuracy.
         order (tuple): A tuple containing the order for the ARIMA model.
+        lags: 
         Example:
         ARIMAModel.best_model(data["column_name"], order=(2,1,1))
         """
@@ -312,51 +317,42 @@ class ARIMAModels(TimeSeries):
         model = sm.tsa.arima.ARIMA(self.__train, order=self.__order)
         self.__results = model.fit()
         print(self.__results.summary().tables[1])
-        return self.__results.resid
-    
-    
-    def results_diagnostics(self, lags):
-        """_summary_
-        Check if the model fulfils regression and Time Series Assumptions
-        By Plotting the QQ-plot and performing the Ljung-Box test on the data
-        Args:
-        lags (integer): The number of lags to be used in the Ljung-Box test
-        """
-        import statsmodels.api as sm
-        self.__results.plot_diagnostics(figsize=(16, 8))
-        plt.show()
+        
+        
         print('\n')
         print('-'*47, "\n",'-'*47,"\n")
+        
+        
         print("Ljung-Box Test - Checks for Serial Correlation", "\n")
         print("null-hypothesis:         The residuals are independently distributed.")
         print("alternative-hypothesis:  The residuals are not independently distributed","\n", '-'*47)
         print(sm.stats.acorr_ljungbox(self.__results.resid, lags=lags, return_df=True))
         
-    def prediction_check(self, test_data):
-        """_summary_
-        Plot How the predictions compares with the test data
-
-        Args:
-        test_data(pandas Series): The pandas series to be compared with the prediction
-        """
-        self.__test = test_data
-        start_date = str(test_data.index[0]).split(" ")[0]
-        end_date = str(test_data.index[-1]).split(" ")[0]
-        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
-        end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+        
+        print('\n')
+        print('-'*47, "\n",'-'*47,"\n")
+        
+        # Plotting predictions and comparing to the plot of the test dataset
+        print("How predictions compares to actual test data", "\n")
+        # Setting up the dates for predictions by the trained model
+        start_date = datetime.strptime(str(test_data.index[0]).split(" ")[0],
+                                       "%Y-%m-%d").date()
+        end_date = datetime.strptime(str(test_data.index[-1]).split(" ")[0],
+                                     "%Y-%m-%d").date()
         df_pred = self.__results.predict(start=start_date, end=end_date)
         # Visualizing the predictions
-        # df_pred[self.start_date:self.end_date].plot(figsize=(20, 5), color="red")
-        # self.data_test[self.start_date:self.end_date].plot(figsize=(20, 5), color="blue")
         plt.rcParams["figure.figsize"] = (20, 6)
         plt.plot(df_pred, label="prediction", color="red")
-        plt.plot(self.__test[start_date:end_date], label="actual", color="midnightblue")
+        plt.plot(test_data[start_date:end_date], label="actual", color="midnightblue")
         plt.xlabel("Date")
         plt.title("Predictions VS Actual", size=24)
         plt.legend(loc="upper right")
         plt.show()
+        
+        return self.__results.resid
     
-    def forecasts(self,data, steps):
+    
+    def forecasts(self,data, order, steps):
         """_summary_
         Gets the forecasts of the model
 
@@ -365,7 +361,7 @@ class ARIMAModels(TimeSeries):
             steps (_type_): _description_
         """
         import statsmodels.api as sm
-        model = sm.tsa.arima.ARIMA(data, order=self.__order)
+        model = sm.tsa.arima.ARIMA(data, order=order)
         results = model.fit()
         pred_uc = results.get_forecast(steps=steps)
         pred_ci = pred_uc.conf_int()
@@ -418,18 +414,23 @@ class SARIMAModels(TimeSeries):
                     continue
         print('Best Order%s Seasonal_order%s AIC=%.3f' % (best_order, best_seas_order, best_score))
         
-    def best_model(self, train_data, order, seasonal_order):
-        """
+        
+    def best_model(self, train_data, test_data, order, seasonal_order, lags):
+        """summary
         This is a function to fit the best model based on aic and llf obtained from
-        run_time_series function
-        :param order: This is the ARIMA order that best suits the data. Entered as a tuple
+        model_evaluation function and also check if the fitted model perfoms as expected.
+        Checks if the model fulfils regression and Time Series Assumptions
+        By Plotting the QQ-plot and performing the Ljung-Box test on the data.
+        Plots How the predictions compares with the test data
+        Args:
+        train_data(pandas series): A pandas series containing the training data to be fitted on the model
+        test_data(pandas series): A pandas series containing the test data to test the model's accuracy.
+        order (tuple): A tuple containing the order for the ARIMA model.
         :param seasonal_order: The order of the seasonal part of the data. Entered as tuple
-        :param enforce_stationarity: To be described
-        :param enforce_invertibility:To be described
-        :return: results, results_resid
+        lags: 
+        Example:
+        ARIMAModel.best_model(data["column_name"], order=(2,1,1))
         """
-        self.__order=order
-        self.__seasonal_order=seasonal_order
         import statsmodels.api as sm
         model = sm.tsa.statespace.SARIMAX(train_data,
                                           order=order,
@@ -439,53 +440,41 @@ class SARIMAModels(TimeSeries):
 
         self.__results = model.fit()
         print(self.__results.summary().tables[1])
-        self.__results_resid = self.__results.resid
-        return self.__results_resid
-    
-    def results_diagnostics(self, lags):
-        """_summary_
-        Check if the model fulfils regression and Time Series Assumptions
-        By Plotting the QQ-plot and performing the Ljung-Box test on the data
-        Args:
-        lags (integer): The number of lags to be used in the Ljung-Box test
-        """
-        import statsmodels.api as sm
-        self.__results.plot_diagnostics(figsize=(16, 8))
-        plt.show()
+        
         print('\n')
         print('-'*47, "\n",'-'*47,"\n")
+        
+        
         print("Ljung-Box Test - Checks for Serial Correlation", "\n")
         print("null-hypothesis:         The residuals are independently distributed.")
         print("alternative-hypothesis:  The residuals are not independently distributed","\n", '-'*47)
-        print(sm.stats.acorr_ljungbox(self.__results_resid, lags=lags, return_df=True))
+        print(sm.stats.acorr_ljungbox(self.__results.resid, lags=lags, return_df=True))
         
-    def prediction_check(self, test_data):
-        """_summary_
-        Plot How the predictions compares with the test data
-
-        Args:
-        test_data(pandas Series): The pandas series to be compared with the prediction
-        start_date (datetime string): The date that the model should start predicting, should be Y-m-d
-        end_date (datetime string): When the model should end its prediction, should be Y-m-d
-        """
-        self.__test = test_data
-        start_date = str(test_data.index[0]).split(" ")[0]
-        end_date = str(test_data.index[-1]).split(" ")[0]
-        start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
-        end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+        
+        print('\n')
+        print('-'*47, "\n",'-'*47,"\n")
+        
+        # Plotting predictions and comparing to the plot of the test dataset
+        print("How predictions compares to actual test data", "\n")
+        # Setting up the dates for predictions by the trained model
+        start_date = datetime.strptime(str(test_data.index[0]).split(" ")[0],
+                                       "%Y-%m-%d").date()
+        end_date = datetime.strptime(str(test_data.index[-1]).split(" ")[0],
+                                     "%Y-%m-%d").date()
         df_pred = self.__results.predict(start=start_date, end=end_date)
         # Visualizing the predictions
-        # df_pred[self.start_date:self.end_date].plot(figsize=(20, 5), color="red")
-        # self.data_test[self.start_date:self.end_date].plot(figsize=(20, 5), color="blue")
         plt.rcParams["figure.figsize"] = (20, 6)
         plt.plot(df_pred, label="prediction", color="red")
-        plt.plot(self.__test[start_date:end_date], label="actual", color="midnightblue")
+        plt.plot(test_data[start_date:end_date], label="actual", color="midnightblue")
         plt.xlabel("Date")
         plt.title("Predictions VS Actual", size=24)
         plt.legend(loc="upper right")
         plt.show()
         
-    def forecasts(self,data, steps):
+        return self.__results.resid
+    
+        
+    def forecasts(self, data, order, seasonal_order, steps):
         """_summary_
         Gets the forecasts of the model
 
@@ -495,8 +484,8 @@ class SARIMAModels(TimeSeries):
         """
         import statsmodels.api as sm
         model = sm.tsa.statespace.SARIMAX(data,
-                                          order=self.__order,
-                                          seasonal_order=self.__seasonal_order,
+                                          order=order,
+                                          seasonal_order=seasonal_order,
                                           enforce_stationarity=False,
                                           enforce_invertibility=False)
         results = model.fit()

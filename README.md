@@ -20,48 +20,76 @@ ARIMAModels is a class that inherits from the TimeSeries class, with some specif
 Below is a limited sample of how to use the ARIMAModels class:
 ```bash
 arima_model = ARIMAModels()
+```
+Visualizing the trend ,decomposition via decomposition plots and correlation function using acf and pacf
+```bash
 arima_model.trend_visualizations(data)
 arima_model.decomposition_plot(data, model='additive', period='None') # The period is None and the model is additive by default. The period should be adjusted according to data. The data can be a pandas DataFrame or a pandas Series.
 arima_model.correlation_function(data, lags=10) # lags=10 is the default, and can be changed if need be.
+```
+Checking for stationarity
+```bash
 arima_model.stationarity_check(data, signif=0.05) # signif=0.05 is the alpha value, 
 # can be changed if need be. In this  case stationarity is being checked at 95% confidence level.
+```
+Evaluating the best fitting model
+```bash
 arima_model.model_evaluation(train, test, p_values, d_values, q_values) 
-# train parameter should the a Pandas Series, which is the training dataset; 
-# test parameter should the a Pandas Series, which is the training dataset; 
+# train parameter should be a Pandas Series, which is the training dataset; 
+# test parameter should be a Pandas Series, which is the training dataset; 
 # p_values is a list of the range of values that you wish to check for the AR part of ARIMA model
 # d_values is a list of the range of values that you wish to check for the differentiation part
 # q_values is a list of the range of values that you wish to check for the MA part of ARIMA model
-arima_model.best_model(train_data, order) # train_data represents the data to be modelled and should have already been split; order parameter is the order of the ARIMA model.
-arima_model.results_diagnostics(lags) # The lags will be used to perform the ljung-Box test
-# The residuals and fitted model are already provided by the class so you dont need to reprovision
-arima_model.prediction_check(test_data=test)
-# The test dataset must be provided
-# Checks how the model's prediction performs compared to the test data.
-# Note: arima_model.prediction_check method must only be called after the arima_model.best_model
-arima_model.forecasts(data, steps) # data should be the full dataset(neither train nor test)
-# Note: arima_model.forecasts method must only be called after the arima_model.best_model
+```
+best_model method fits the best model obtained from the function above and checks timeseries assumptions
+by comparing the model's prediction and actual test dataset using a line chart. It also checks for serial
+correlation using Ljung-Box test.
+```bash
+arima_model.best_model(train_data,test_data,order=(2,1,1),lags=10) 
+# train_data represents the data to be modelled and should have already been split; 
+# order parameter is the order of the ARIMA model.
+```
+forecasts method plots a prediction into the future which is crucial and should therefore be as accurate as possible.
+```bash
+arima_model.forecasts(data,order=(2,1,1),steps=20) # data should be the full dataset(neither train nor test)
 ```
 SARIMAModels is a class that inherits from the TimeSeries class, with some specific functionalities that include fitting a SARIMA model, checking the performance of the SARIMA model and forecasting using the SARIMA model thats fitted.
 Below is a limited sample of how to use the SARIMAModels class:
 ```bash
 sarima_model = sARIMAModels()
+```
+Visualizing the trend ,decomposition via decomposition plots and correlation function using acf and pacf
+```bash
 sarima_model.trend_visualizations(data)
-sarima_model.decomposition_plot(data, model='additive', period='None') # The period is None and the model is additive by default. The period should be adjusted according to data. The data can be a pandas DataFrame or a pandas Series.
+sarima_model.decomposition_plot(data, model='additive', period='None') 
+# The period is None and the model is additive by default. 
+# The period should be adjusted according to data. 
+# The data can be a pandas DataFrame or a pandas Series.
 sarima_model.correlation_function(data, lags=10) # lags=10 is the default, and can be changed if need be.
+```
+Checking for stationarity
+```bash
 sarima_model.stationarity_check(data, signif=0.05) # signif=0.05 is the alpha value, 
 # can be changed if need be. In this  case stationarity is being checked at 95% confidence level.
-sarima_model.model_evaluation(train, test, p_values, d_values, q_values) 
-# Train parameter should the a Pandas Series; the train data_set
-# Test parameter should the a Pandas Series; the test data_set
-# p_values is a list of the range of values that you wish to check for the AR part of ARIMA model
-# d_values is a list of the range of values that you wish to check for the differentiation part
-# q_values is a list of the range of values that you wish to check for the MA part of ARIMA model
-sarima_model.best_model(train_data, order) # train_data represents the data to be modelled and should have already been split; order parameter is the order of the ARIMA model.
-sarima_model.results_diagnostics(lags) # The lags will be used to perform the ljung-Box test
-# The residuals and fitted model are already provided by the class so you dont need to reprovision
-sarima_model.prediction_check(test_data=test)
-# The test dataset must be provided
-# Checks how the model's prediction performs compared to the test data.
-# Note: sarima_model.prediction_check method must only be called after the sarima_model.best_model
-sarima_model.forecasts(data, steps) # data should be the full dataset(neither train nor test)
-# Note: sarima_model.forecasts method must only be called after the sarima_model.best_model
+```
+Evaluating the best fitting model
+```bash
+sarima_model.model_evaluation(train_data, order_limit=2) 
+# The data should be the train dataset for best results
+# Order limit of 2 ensures that all possible combinations of models upto 1 will be explored.
+```
+best_model method fits the best model obtained from the function above and checks timeseries assumptions
+by comparing the model's prediction and actual test dataset using a line chart. It also checks for serial
+correlation using Ljung-Box test.
+```bash
+sarima_model.best_model(train_data, test_data, order=(0, 1, 1),seasonal_order=(1, 1, 1, 12), lags=10) 
+# train_data represents the data to be modelled and should have already been split; 
+# test_data represents the data to be used for checking the perfomance of the fitted model
+# order parameter is the order of the ARIMA part of the model.
+# Seasonal_order is the order of the seasonal part of the model.
+```
+forecasts method plots a prediction into the future which is crucial and should therefore be as accurate as possible.
+```bash
+sarima_model.forecasts(data,order=(0, 1, 1),seasonal_order=(1, 1, 1, 12),steps=20) 
+# data should be the full dataset(neither train nor test)
+```
