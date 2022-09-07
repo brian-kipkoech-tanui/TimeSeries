@@ -58,7 +58,7 @@ arima_model.forecasts(data,order=(2,1,1),steps=20) # data should be the full dat
 SARIMAModels is a class that inherits from the TimeSeries class, with some specific functionalities that include fitting a SARIMA model, checking the performance of the SARIMA model and forecasting using the SARIMA model thats fitted.
 Below is a limited sample of how to use the SARIMAModels class:
 ```bash
-sarima_model = sARIMAModels()
+sarima_model = SARIMAModels()
 ```
 Visualizing the trend ,decomposition via decomposition plots and correlation function using acf and pacf
 ```bash
