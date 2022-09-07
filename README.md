@@ -16,6 +16,7 @@ data["date_column"] = pd.to_datetime(data["date"])
 # Or if its yearly data
 data["year"] = pd.to_datetime(data["year"], format="%Y")
 ```
+## ARIMA models
 ARIMAModels is a class that inherits from the TimeSeries class, with some specific functionalities that include fitting an ARIMA model, checking the performance of the ARIMA model and forecasting using the ARIMA model thats fitted.
 Below is a limited sample of how to use the ARIMAModels class:
 ```bash
@@ -53,6 +54,7 @@ forecasts method plots a prediction into the future which is crucial and should 
 ```bash
 arima_model.forecasts(data,order=(2,1,1),steps=20) # data should be the full dataset(neither train nor test)
 ```
+## SARIMA models
 SARIMAModels is a class that inherits from the TimeSeries class, with some specific functionalities that include fitting a SARIMA model, checking the performance of the SARIMA model and forecasting using the SARIMA model thats fitted.
 Below is a limited sample of how to use the SARIMAModels class:
 ```bash
