@@ -12,7 +12,7 @@ import plotly.express as px
 # Settings
 # Ignore harmless warnings
 warnings.filterwarnings("ignore")
-plt.rcParams["figure.figsize"] = (15, 4)
+plt.rcParams["figure.figsize"] = (20, 5)
 
 class TimeSeries:
     def trend_visualizations(self, data):
@@ -23,7 +23,7 @@ class TimeSeries:
             # If the time series data is a pandas DataFrame, it should visualize all variables
             for i in range(len(list(data.columns))):
                 df = list(data.columns)[i]
-                data[df].plot(figsize=(12, 5), color = "white") # Plotting the time series plots
+                data[df].plot(figsize=(20, 5), color = "white") # Plotting the time series plots
                 plt.title(df, size=14)
                 plt.show()
         except AttributeError:
@@ -39,6 +39,7 @@ class TimeSeries:
         try:
             # If the time series data is a pandas DataFrame, it should visualize all
             # Plotting the decomposition plots; trend, seasonality and randomness
+            plt.rcParams["figure.figsize"] = (20, 5)
             for i in range(len(list(data.columns))):
                 df = list(data.columns)[i]
                 decomposition = seasonal_decompose(data[df],
@@ -59,6 +60,7 @@ class TimeSeries:
                 plt.show()
         except AttributeError:
             # If the Time series data is a pandas Series
+            plt.rcParams["figure.figsize"] = (20, 5)
             decomposition = seasonal_decompose(data,
                                             model=model,
                                             period=period)
@@ -75,6 +77,7 @@ class TimeSeries:
             plt.show()
             
     def correlation_function(self, data, lags=10):
+        plt.rcParams["figure.figsize"] = (20, 5)
         import statsmodels.graphics.tsaplots as sgt
         try:
             # If the time series data is a pandas DataFrame, it should visualize all
@@ -95,6 +98,7 @@ class TimeSeries:
                             title=f"PACF of {df}")
                 plt.show()
         except AttributeError:
+            plt.rcParams["figure.figsize"] = (20, 5)
             # The ACF
             sgt.plot_acf(data, lags=lags,
                         #zero=False,
@@ -341,7 +345,7 @@ class ARIMAModels(TimeSeries):
                                      "%Y-%m-%d").date()
         df_pred = self.__results.predict(start=start_date, end=end_date)
         # Visualizing the predictions
-        plt.rcParams["figure.figsize"] = (20, 6)
+        plt.rcParams["figure.figsize"] = (20, 5)
         plt.plot(df_pred, label="prediction", color="red")
         plt.plot(test_data[start_date:end_date], label="actual", color="midnightblue")
         plt.xlabel("Date")
@@ -365,7 +369,7 @@ class ARIMAModels(TimeSeries):
         results = model.fit()
         pred_uc = results.get_forecast(steps=steps)
         pred_ci = pred_uc.conf_int()
-        ax = data.plot(label='observed', figsize=(14, 7), color="white")
+        ax = data.plot(label='observed', figsize=(20, 5), color="white")
         pred_uc.predicted_mean.plot(ax=ax, label='Forecast', color="red")
         ax.fill_between(pred_ci.index,
                         pred_ci.iloc[:, 0],
@@ -463,7 +467,7 @@ class SARIMAModels(TimeSeries):
                                      "%Y-%m-%d").date()
         df_pred = self.__results.predict(start=start_date, end=end_date)
         # Visualizing the predictions
-        plt.rcParams["figure.figsize"] = (20, 6)
+        plt.rcParams["figure.figsize"] = (20, 5)
         plt.plot(df_pred, label="prediction", color="red")
         plt.plot(test_data[start_date:end_date], label="actual", color="midnightblue")
         plt.xlabel("Date")
@@ -491,7 +495,7 @@ class SARIMAModels(TimeSeries):
         results = model.fit()
         pred_uc = results.get_forecast(steps=steps)
         pred_ci = pred_uc.conf_int()
-        ax = data.plot(label='observed', figsize=(14, 7), color="white")
+        ax = data.plot(label='observed', figsize=(20, 5), color="white")
         pred_uc.predicted_mean.plot(ax=ax, label='Forecast', color="red")
         ax.fill_between(pred_ci.index,
                         pred_ci.iloc[:, 0],
