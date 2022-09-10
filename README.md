@@ -37,9 +37,9 @@ Evaluating the best fitting model
 ```bash
 arima_model.model_evaluation(train, test, p_values, d_values, q_values) 
 # train parameter should be a Pandas Series, which is the training dataset; 
-# test parameter should be a Pandas Series, which is the training dataset; 
+# test parameter should be a Pandas Series, which is the test dataset; 
 # p_values is a list of the range of values that you wish to check for the AR part of ARIMA model
-# d_values is a list of the range of values that you wish to check for the differentiation part
+# d_values is a list of the range of values that you wish to check for the difference part
 # q_values is a list of the range of values that you wish to check for the MA part of ARIMA model
 ```
 best_model method fits the best model obtained from the function above and checks timeseries assumptions
@@ -78,7 +78,7 @@ Evaluating the best fitting model
 ```bash
 sarima_model.model_evaluation(train_data, order_limit=2) 
 # The data should be the train dataset for best results
-# Order limit of 2 ensures that all possible combinations of models upto 1 will be explored.
+# Order limit of 2 ensures that all possible combinations of models upto order 1 will be explored.
 ```
 best_model method fits the best model obtained from the function above and checks timeseries assumptions
 by comparing the model's prediction and actual test dataset using a line chart. It also checks for serial
