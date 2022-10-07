@@ -23,17 +23,18 @@ class TimeSeries:
             # If the time series data is a pandas DataFrame, it should visualize all variables
             for i in range(len(list(data.columns))):
                 df = list(data.columns)[i]
-                data[df].plot(figsize=(20, 5), color = "white") # Plotting the time series plots
+                data[df].plot(figsize=(20, 5), color = "#F2F4F6") # Plotting the time series plots
                 plt.title(df, size=14)
                 plt.show()
         except AttributeError:
             # If the Time series data is a pandas Series, It should not get an AttributeError
-            data.plot(figsize=(20, 5), color="white")  # Plotting the time series plots
+            data.plot(figsize=(20, 5), color="#F2F4F6")  # Plotting the time series plots
             plt.title("Time Plot", size=10)
             plt.show()
             
     def decomposition_plot(self, data, model="additive", period=None):
         plt.style.use('dark_background')
+        plt.rcParams["figure.figsize"] = (20, 5)
         from statsmodels.tsa.seasonal import seasonal_decompose
         
         try:
@@ -49,13 +50,13 @@ class TimeSeries:
                 # Seasonality plot
                 seasonality = decomposition.seasonal
                 df = list(data.columns)[i]
-                seasonality.plot(color='white')
+                seasonality.plot(color="#F2F4F6")
                 plt.title(f'seasonality of {df}', size=14)
                 plt.show()
                 
                 # Residual Plot
                 resid = decomposition.resid
-                resid.plot(color='white')
+                resid.plot(color="#F2F4F6")
                 plt.title(f"Residuals {df}", size=14)
                 plt.show()
         except AttributeError:
@@ -66,19 +67,23 @@ class TimeSeries:
                                             period=period)
             # Seasonality plot
             seasonality = decomposition.seasonal
-            seasonality.plot(color='white')
+            seasonality.plot(color="#F2F4F6")
             plt.title('seasonality', size=14)
             plt.show()
             
             # Residual Plot
             resid = decomposition.resid
-            resid.plot(color='white')
+            resid.plot(color="#F2F4F6")
             plt.title("Residuals", size=14)
             plt.show()
             
     def correlation_function(self, data, lags=10):
-        plt.rcParams["figure.figsize"] = (20, 5)
+        # Import the necessary dependencies
         import statsmodels.graphics.tsaplots as sgt
+        
+        
+        plt.rcParams["figure.figsize"] = (20, 5)
+        # plt.figure(facecolor='#041C32')
         try:
             # If the time series data is a pandas DataFrame, it should visualize all
             # Plotting the decomposition plots; trend, seasonality and randomness
@@ -87,14 +92,14 @@ class TimeSeries:
                 # The ACF
                 sgt.plot_acf(data[df], lags=lags,
                             #zero=False,
-                            color="darkslategrey",
+                            color="#F2F4F6",
                             title=f"ACF of {df}")
                 plt.show()
                 # The PACF
                 sgt.plot_pacf(data[df], alpha=0.05,
                             lags=lags, #zero=False,
                             method=("ols"),
-                            color="darkslategrey",
+                            color="#F2F4F6",
                             title=f"PACF of {df}")
                 plt.show()
         except AttributeError:
@@ -102,14 +107,14 @@ class TimeSeries:
             # The ACF
             sgt.plot_acf(data, lags=lags,
                         #zero=False,
-                        color="darkslategrey",
+                        color="#F2F4F6",
                         title="ACF")
             plt.show()
             # The PACF
             sgt.plot_pacf(data, alpha=0.05,
                         lags=lags, #zero=False,
                         method=("ols"),
-                        color="darkslategrey",
+                        color="#F2F4F6",
                         title="PACF")
             plt.show()
         
