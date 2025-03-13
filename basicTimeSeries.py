@@ -462,6 +462,7 @@ class SARIMAModels(TimeSeries):
                 except:
                     continue
         print('Best Order%s Seasonal_order%s AIC=%.3f' % (best_order, best_seas_order, best_score))
+        return best_order, best_seas_order
         
         
     def best_model(self, train_data, test_data, order, seasonal_order, lags):
