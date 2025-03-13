@@ -194,6 +194,46 @@ class TimeSeries:
             for key, value in critical_values.items():
                 print(f'   {key} :  ={value}')
             print(f'Result: The series is {"not " if p_value < 0.05 else ""}stationary')
+
+        except AttributeError:
+        
+            p_value = adfuller(data)[1]
+            test_statistic = adfuller(data)[0]
+            lag = adfuller(data)[2]
+            observations = adfuller(data)[3]
+            critical_values = adfuller(data)[4]
+            maximized_criteria = adfuller(data)[5]
+
+            print("Augmented Dickey Fuller Test", "\n")
+            print("null-hypothesis: The data is non-stationary" )
+            print("alternative-hypothesis: The data is stationary","\n", '-'*47)
+            print(f"p-value:                = {p_value}")
+            print(f"test-statistic:         = {test_statistic}")
+            print(f"Number of lag chosen:   = {lag}")
+            print(f"observation:            = {observations}")
+            print(f"critical-values:        = {critical_values}")
+            print(f"maximized-criteria:     = {maximized_criteria}")
+            if test_statistic < critical_values['5%']:
+                print(f"=> The data is stationary. The p-value is {round(p_value, 3)} thus we reject the null hypothesis")
+            else:
+                print(f"=> The data is non-stationary.The p-value is {round(p_value, 3)} thus we fail to reject the null hypothesis")
+                
+            print('\n')
+            
+            # KPSS test
+            print('-'*47, "\n",'-'*47,"\n")
+            print("KPSS Test for Stationarity","\n")
+            print("H0: The time series data is stationary")
+            print("H1:The time series data is non-stationary", "\n",'-'*47)
+            statistic, p_value, n_lags, critical_values = kpss(data)
+            # Format Output
+            print(f'KPSS Statistic: ={statistic}')
+            print(f'p-value:        ={p_value}')
+            print(f'num lags:       ={n_lags}')
+            print('Critial Values:')
+            for key, value in critical_values.items():
+                print(f'   {key} :  ={value}')
+            print(f'Result: The series is {"not " if p_value < 0.05 else ""}stationary')
             
     def split_data(self, data, ratio=0.90):
         """_summary_
