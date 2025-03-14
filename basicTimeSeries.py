@@ -462,7 +462,16 @@ class SARIMAModels(TimeSeries):
                 except:
                     continue
         print('Best Order%s Seasonal_order%s AIC=%.3f' % (best_order, best_seas_order, best_score))
-        return best_order, best_seas_order
+        # Store the values to be returned in explicit variables
+        order_to_return = best_order
+        seasonal_order_to_return = best_seas_order
+        
+        # Add debugging to verify the values right before return
+        print(f"DEBUG - Returning: {order_to_return}, {seasonal_order_to_return}")
+        
+        # Return those explicit variables
+        return order_to_return, seasonal_order_to_return
+        # return best_order, best_seas_order
         
         
     def best_model(self, train_data, test_data, order, seasonal_order, lags):
